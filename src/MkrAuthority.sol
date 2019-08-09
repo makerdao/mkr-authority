@@ -33,6 +33,10 @@ contract MkrAuthority {
   function deny(address usr) public sudo { wards[usr] = 0; emit LogDeny(usr); }
   modifier auth { require(wards[msg.sender] == 1); _; }
 
+  constructor() public {
+    root = msg.sender;
+  }
+
   bytes4 constant mint = bytes4(keccak256(abi.encodePacked('mint(address,uint256)')));
   bytes4 constant burn = bytes4(keccak256(abi.encodePacked('burn(address,uint256)')));
 

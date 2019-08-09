@@ -19,18 +19,29 @@ import "ds-test/test.sol";
 
 import "./MkrAuthority.sol";
 
+contract Tester {
+  MkrAuthority authority;
+  constructor(MkrAuthority authority_) public { authority = authority_; }
+  function setRoot(address usr) public { authority.setRoot(usr); }
+}
+
 contract MkrAuthorityTest is DSTest {
     MkrAuthority authority;
+    Tester tester;
 
     function setUp() public {
-        authority = new MkrAuthority();
+      authority = new MkrAuthority();
+      tester = new Tester(authority);
     }
 
-    function testFail_basic_sanity() public {
-        assertTrue(false);
+    function testSetRoot() public {
+      assertTrue(authority.root() == address(this));
+      authority.setRoot(address(tester));
+      assertTrue(authority.root() == address(tester));
     }
 
-    function test_basic_sanity() public {
-        assertTrue(true);
+    function testFailSetRoot() public {
+      assertTrue(authority.root() != address(tester));
+      tester.setRoot(address(tester));
     }
 }
