@@ -20,11 +20,17 @@ pragma solidity ^0.5.10;
 contract MkrAuthority {
   address public root;
   modifier sudo { require(msg.sender == root); _; }
-  function setRoot(address usr) public note sudo { root = usr; }
+  event LogSetRoot(address indexed newRoot);
+  function setRoot(address usr) public sudo {
+    root = usr;
+    emit LogSetRoot(usr);
+  }
 
   mapping (address => uint) public wards;
-  function rely(address usr) public note sudo { wards[usr] = 1; }
-  function deny(address usr) public note sudo { wards[usr] = 0; }
+  event LogRely(address indexed usr);
+  function rely(address usr) public sudo { wards[usr] = 1; emit LogRely(usr); }
+  event LogDeny(address indexed usr);
+  function deny(address usr) public sudo { wards[usr] = 0; emit LogDeny(usr); }
   modifier auth { require(wards[msg.sender] == 1); _; }
 
   bytes4 constant mint = bytes4(keccak256(abi.encodePacked('mint(address,uint256)')));
