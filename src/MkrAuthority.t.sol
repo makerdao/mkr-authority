@@ -19,6 +19,10 @@ import "ds-test/test.sol";
 
 import "./MkrAuthority.sol";
 
+contract DSAuthority {
+  function canCall(address src, address dst, bytes4 sig) public view returns (bool) {}
+}
+
 contract Tester {
   MkrAuthority authority;
   constructor(MkrAuthority authority_) public { authority = authority_; }
@@ -33,7 +37,7 @@ contract Tester {
 
   function mint(address usr, uint256 wad) auth public {}
   function burn(address usr, uint256 wad) auth public {}
-  function stop() auth public {}
+  function notMintOrBurn() auth public {}
 }
 
 contract MkrAuthorityTest is DSTest {
@@ -78,29 +82,29 @@ contract MkrAuthorityTest is DSTest {
     tester.deny(address(tester));
   }
 
-  function testMintAuthorization() public {
+  function testMintAsRoot() public {
+    tester.mint(address(this), 1);
+  }
+
+  function testMintAsWard() public {
     authority.rely(address(this));
+    authority.setRoot(address(0));
     tester.mint(address(this), 1);
   }
 
-  function testFailMintAuthroization() public {
+  function testFailMintNotWardNotRoot() public {
+    authority.setRoot(address(0));
     tester.mint(address(this), 1);
   }
 
-  function testBurnAuthorization() public {
+  function testBurn() public {
     authority.rely(address(this));
     tester.burn(address(this), 1);    
     authority.deny(address(this));
     tester.burn(address(this), 1);    
   }
 
-  function testFailAuthorizedNotBurnOrMint() public {
-    authority.rely(address(this));
-    tester.stop();
-  }
-
-  function testFailUnauthorizedNotBurnOrMint() public {
-    authority.deny(address(this));
-    tester.stop();
+  function testRootCanCallAnything() public {
+    tester.notMintOrBurn();
   }
 }
