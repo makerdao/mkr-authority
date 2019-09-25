@@ -25,6 +25,7 @@ contract OwnerUpdate is DSTest {
         MkrAuthority authority = new MkrAuthority();
 
         authority.rely(msg.sender);
+        authority.rely(address(this));
 
         ERC20 mkr = ERC20(0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2);
 
@@ -33,12 +34,12 @@ contract OwnerUpdate is DSTest {
         mkr.setOwner(address(0));
         assertTrue(address(mkr.owner()) == address(0));
 
-        uint balance = mkr.balanceOf(msg.sender);
+        uint balance = mkr.balanceOf(address(this));
 
-        // mkr.mint(msg.sender, 1);
-        // assertEq(balance + 1, mkr.balanceOf(msg.sender));
+        mkr.mint(address(this), 1);
+        assertEq(balance + 1, mkr.balanceOf(address(this)));
 
-        // mkr.burn(address(msg.sender), 1);
-        // assertEq(balance, mkr.balanceOf(msg.sender));
+        mkr.burn(address(this), 1);
+        assertEq(balance, mkr.balanceOf(address(this)));
     }
 }
