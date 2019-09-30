@@ -4,7 +4,7 @@ import "ds-test/test.sol";
 
 import "./MkrAuthority.sol";
 import "./flop.sol";
-// import "./flap.sol";
+import "./flap.sol";
 
 interface ERC20 {
     function setAuthority(address whom) external;
@@ -49,6 +49,14 @@ contract OwnerUpdate is DSTest {
         authority.rely(address(flop));
 
         flop.kick(address(this), 1, 1);
+
+        flop.deal(1);
+
+        //create a flapper
+        Flapper flap = new Flapper(address(this), 0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2);
+        authority.rely(address(flop));
+
+        flap.kick(1, 1);
 
         flop.deal(1);
     }

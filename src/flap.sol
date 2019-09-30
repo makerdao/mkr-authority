@@ -18,14 +18,15 @@
 pragma solidity 0.5.10;
 
 import "./lib.sol";
+import "./flop.sol";
 
-contract VatLike {
-    function move(address,address,uint) external;
-}
-contract GemLike {
-    function move(address,address,uint) external;
-    function burn(address,uint) external;
-}
+// contract VatLike {
+//     function move(address,address,uint) external;
+// }
+// contract GemLike {
+//     function move(address,address,uint) external;
+//     function burn(address,uint) external;
+// }
 
 /*
    This thing lets you sell some dai in return for gems.
@@ -105,9 +106,10 @@ contract Flapper is DSNote {
         bids[id].bid = bid;
         bids[id].lot = lot;
         bids[id].guy = msg.sender; // configurable??
-        bids[id].end = add(uint48(now), tau);
+        //setting end to 0 so we can instantly call kick()
+        bids[id].end = 0; //add(uint48(now), tau);
 
-        vat.move(msg.sender, address(this), lot);
+        // vat.move(msg.sender, address(this), lot);
 
         emit Kick(id, lot, bid);
     }
@@ -135,8 +137,11 @@ contract Flapper is DSNote {
     }
     function deal(uint id) external note {
         require(live == 1);
-        require(bids[id].tic != 0 && (bids[id].tic < now || bids[id].end < now));
-        vat.move(address(this), bids[id].guy, bids[id].lot);
+        //remove the need to have bids[id].tic != 0
+        //this is so we don't need the vat
+        require(bids[id].tic < now || bids[id].end < now);
+        // ignoring the vat. This isn't what we are testing
+        // vat.move(address(this), bids[id].guy, bids[id].lot);
         gem.burn(address(this), bids[id].bid);
         delete bids[id];
     }

@@ -24,6 +24,8 @@ contract VatLike {
 }
 contract GemLike {
     function mint(address,uint) external;
+    function move(address,address,uint) external;
+    function burn(address,uint) external;
 }
 
 /*
@@ -108,7 +110,7 @@ contract Flopper is DSNote {
         bids[id].bid = bid;
         bids[id].lot = lot;
         bids[id].guy = gal;
-        //setting end to 0 so we can instantly call kick()
+        //setting end to 0 so we can instantly call deal()
         bids[id].end = 0; //add(uint48(now), tau);
 
         emit Kick(id, lot, bid, gal);
@@ -138,6 +140,7 @@ contract Flopper is DSNote {
     function deal(uint id) external note {
         require(live == 1);
         //remove the need to have bids[id].tic != 0
+        //this is so we don't need the vat
         require(bids[id].tic < now || bids[id].end < now);
         gem.mint(bids[id].guy, bids[id].lot);
         delete bids[id];
