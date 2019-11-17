@@ -16,7 +16,7 @@ of the MKR token via MKR governance as illustrated below.
 <--- : points to source's root or owner
 
 -------    -------    ------------    --------------    -----
-|Chief|<~~~|Pause|<---|PauseProxy|<---|MkrAuthority|<~~~|MKR|-->0
+|Chief|<~~~|Pause|<---|PauseProxy|<---|MkrAuthority|<~~~|MKR|--->0
 -------    -------    ------------    --------------    -----
 ```
 
