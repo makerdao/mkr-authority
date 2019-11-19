@@ -31,7 +31,6 @@ contract MkrAuthority {
   function rely(address usr) public sudo { wards[usr] = 1; emit LogRely(usr); }
   event LogDeny(address indexed usr);
   function deny(address usr) public sudo { wards[usr] = 0; emit LogDeny(usr); }
-  modifier auth { require(wards[msg.sender] == 1); _; }
 
   constructor() public {
     root = msg.sender;
