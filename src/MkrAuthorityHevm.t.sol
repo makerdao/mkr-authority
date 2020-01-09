@@ -55,7 +55,7 @@ contract GemPit {
     function burn(address gem) external;
 }
 
-contract OwnerUpdate is DSTest {
+contract MkrAuthorityTest is DSTest {
     // Test with this:
     // It uses the Multisig as the caller
     // dapp build
@@ -78,7 +78,7 @@ contract OwnerUpdate is DSTest {
         mkr.setOwner(address(0));
     }
 
-    function testChangeOwners() public {
+    function testCanBurnOwn() public {
         assertTrue(MkrAuthority(mkr.authority()) == auth);
 
         assertTrue(mkr.owner() == address(0));
@@ -87,16 +87,17 @@ contract OwnerUpdate is DSTest {
         user1.doBurn(1);
     }
 
-    function testBurn() public {
-        mkr.transfer(address(user1), 2);
-        user1.doBurn(1);
+    function testCanBurnFromOwn() public {
+        mkr.transfer(address(user1), 1);
         user1.doBurn(address(user1), 1);
+    }
 
+    function testCanBurnPit() public {
         assertEq(mkr.balanceOf(address(user1)), 0);
 
         uint256 pitBalance = mkr.balanceOf(address(pit));
         assertTrue(pitBalance > 0);
-        
+
         user1.burnPit();
         assertEq(mkr.balanceOf(address(pit)), 0);
     }
@@ -128,9 +129,6 @@ contract OwnerUpdate is DSTest {
     }
 
     function testFullMkrAuthTest() public {
-        auth.rely(msg.sender);
-        auth.rely(address(this));
-
         //update the authority
         //this works because HEVM allows us to set the caller address
         mkr.setAuthority(address(auth));
