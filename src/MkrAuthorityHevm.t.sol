@@ -78,7 +78,7 @@ contract MkrAuthorityTest is DSTest {
         mkr.setOwner(address(0));
     }
 
-    function testChangeOwners() public {
+    function testCanBurnOwn() public {
         assertTrue(MkrAuthority(mkr.authority()) == auth);
 
         assertTrue(mkr.owner() == address(0));
@@ -87,11 +87,12 @@ contract MkrAuthorityTest is DSTest {
         user1.doBurn(1);
     }
 
-    function testBurn() public {
-        mkr.transfer(address(user1), 2);
-        user1.doBurn(1);
+    function testCanBurnFromOwn() public {
+        mkr.transfer(address(user1), 1);
         user1.doBurn(address(user1), 1);
+    }
 
+    function testCanBurnPit() public {
         assertEq(mkr.balanceOf(address(user1)), 0);
 
         uint256 pitBalance = mkr.balanceOf(address(pit));
