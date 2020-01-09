@@ -19,6 +19,10 @@ import "ds-test/test.sol";
 
 import "./MkrAuthority.sol";
 
+contract DSAuthority {
+  function canCall(address src, address dst, bytes4 sig) public view returns (bool) {}
+}
+
 contract Tester {
   MkrAuthority authority;
   constructor(MkrAuthority authority_) public { authority = authority_; }
@@ -31,9 +35,10 @@ contract Tester {
     _;
   }
 
-  function mint(address usr, uint256 wad) auth public {}
-  function burn(address usr, uint256 wad) auth public {}
-  function stop() auth public {}
+  function mint(address usr, uint256 wad) external auth {}
+  function burn(uint256 wad) external auth {}
+  function burn(address usr, uint256 wad) external auth {}
+  function notMintOrBurn() auth public {}
 }
 
 contract MkrAuthorityTest is DSTest {
@@ -60,7 +65,7 @@ contract MkrAuthorityTest is DSTest {
     assertEq(authority.wards(address(tester)), 0);
     authority.rely(address(tester));
     assertEq(authority.wards(address(tester)), 1);
-  }  
+  }
 
   function testFailRely() public {
     // tester is not authority's root, so cannot call rely
@@ -78,29 +83,30 @@ contract MkrAuthorityTest is DSTest {
     tester.deny(address(tester));
   }
 
-  function testMintAuthorization() public {
-    authority.rely(address(this));
+  function testMintAsRoot() public {
     tester.mint(address(this), 1);
   }
 
-  function testFailMintAuthroization() public {
+  function testMintAsWard() public {
+    authority.rely(address(this));
+    authority.setRoot(address(0));
     tester.mint(address(this), 1);
   }
 
-  function testBurnAuthorization() public {
-    authority.rely(address(this));
-    tester.burn(address(this), 1);    
-    authority.deny(address(this));
-    tester.burn(address(this), 1);    
+  function testFailMintNotWardNotRoot() public {
+    authority.setRoot(address(0));
+    tester.mint(address(this), 1);
   }
 
-  function testFailAuthorizedNotBurnOrMint() public {
+  function testBurn() public {
     authority.rely(address(this));
-    tester.stop();
+    tester.burn(address(this), 1);
+    authority.deny(address(this));
+    tester.burn(address(this), 1);
+    tester.burn(1);
   }
 
-  function testFailUnauthorizedNotBurnOrMint() public {
-    authority.deny(address(this));
-    tester.stop();
+  function testRootCanCallAnything() public {
+    tester.notMintOrBurn();
   }
 }
