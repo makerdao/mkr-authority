@@ -35,8 +35,9 @@ contract Tester {
     _;
   }
 
-  function mint(address usr, uint256 wad) auth public {}
-  function burn(address usr, uint256 wad) auth public {}
+  function mint(address usr, uint256 wad) external auth {}
+  function burn(uint256 wad) external auth {}
+  function burn(address usr, uint256 wad) external auth {}
   function notMintOrBurn() auth public {}
 }
 
@@ -64,7 +65,7 @@ contract MkrAuthorityTest is DSTest {
     assertEq(authority.wards(address(tester)), 0);
     authority.rely(address(tester));
     assertEq(authority.wards(address(tester)), 1);
-  }  
+  }
 
   function testFailRely() public {
     // tester is not authority's root, so cannot call rely
@@ -99,9 +100,10 @@ contract MkrAuthorityTest is DSTest {
 
   function testBurn() public {
     authority.rely(address(this));
-    tester.burn(address(this), 1);    
+    tester.burn(address(this), 1);
     authority.deny(address(this));
-    tester.burn(address(this), 1);    
+    tester.burn(address(this), 1);
+    tester.burn(1);
   }
 
   function testRootCanCallAnything() public {
