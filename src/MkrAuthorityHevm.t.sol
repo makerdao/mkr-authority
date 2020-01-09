@@ -55,7 +55,7 @@ contract GemPit {
     function burn(address gem) external;
 }
 
-contract OwnerUpdate is DSTest {
+contract MkrAuthorityTest is DSTest {
     // Test with this:
     // It uses the Multisig as the caller
     // dapp build
@@ -96,7 +96,7 @@ contract OwnerUpdate is DSTest {
 
         uint256 pitBalance = mkr.balanceOf(address(pit));
         assertTrue(pitBalance > 0);
-        
+
         user1.burnPit();
         assertEq(mkr.balanceOf(address(pit)), 0);
     }
