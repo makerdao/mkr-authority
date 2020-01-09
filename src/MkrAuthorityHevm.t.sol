@@ -129,9 +129,6 @@ contract MkrAuthorityTest is DSTest {
     }
 
     function testFullMkrAuthTest() public {
-        auth.rely(msg.sender);
-        auth.rely(address(this));
-
         //update the authority
         //this works because HEVM allows us to set the caller address
         mkr.setAuthority(address(auth));
