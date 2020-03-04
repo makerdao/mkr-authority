@@ -78,6 +78,15 @@ contract MkrAuthorityTest is DSTest {
         mkr.setOwner(address(0));
     }
 
+    function testCanChangeAuthority() public {
+        MkrAuthority newAuth = new MkrAuthority();
+        mkr.setAuthority(address(newAuth));
+    }
+
+    function testCanChangeOwner() public {
+        mkr.setOwner(msg.sender);
+    }
+
     function testCanBurnOwn() public {
         assertTrue(MkrAuthority(mkr.authority()) == auth);
 
