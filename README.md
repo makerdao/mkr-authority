@@ -1,4 +1,6 @@
 # mkr-authority
+![Build Status](https://github.com/makerdao/mkr-authority/actions/workflows/.github/workflows/tests.yaml/badge.svg?branch=master)
+
 Custom authority for allowing MKR to govern MKR.
 
 Intentionally simple. Once set as the MKR token's authority, if the MKR token's `owner` field is subsequently set to
